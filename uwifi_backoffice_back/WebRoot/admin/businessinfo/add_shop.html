@@ -1,0 +1,242 @@
+<div class="modal-header">
+	<button data-dismiss="modal" class="close" type="button">×</button>
+	<h4 class="blue bigger">添加新店铺</h4>
+</div>
+
+<div class="modal-body">
+	<div class="row">
+	<div class="col-xs-12">
+		<form class="form-horizontal" id="add-shop-from" role="form" method="post" action="businessinfo/addBusinessinfo">
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right">店铺名称</label>
+					<div class="col-sm-8">
+						<input type="text" id="shopNameId" name="businessinfo.busname"
+							value="" placeholder="请输入店铺名称" class="form-control input-large">
+					</div>
+				</div>
+				<#if rolecode != counties>
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right">区域</label>
+					<div class="col-sm-8">
+						<#if rolecode == area>
+					    <span class="user-info">
+							<select id="provinceId_bus"  onchange="getProvinceInfo(this)" class="form-control input-small no-padding-right" name="businessinfo.province" >
+								<option value="">--请选择--</option>
+								<#list provinceList as province>
+								<option value="${(province.regioncode!'')}" >${(province.regionname!"")}</option>
+								</#list>
+							</select>
+						</span>
+						</#if>
+						<#if rolecode == area>
+						<span class="user-info">
+							<select id="cityId_bus" onchange="getCityInfo(this)" class="form-control input-small no-padding-right" name="businessinfo.city">
+								<option value="">--请选择--</option>
+							</select>
+						</span>
+						<#elseif rolecode == province>
+						<span class="user-info">
+							<select id="cityId_bus" onchange="getCityInfo(this)" class="form-control input-small no-padding-right" name="businessinfo.city">
+								<option value="">--请选择--</option> 
+								<#list cityList as city>
+								<option value="${(city.regioncode!'')}" >${(city.regionname!"")}</option>
+								</#list>
+							</select>
+						</span>
+						</#if>
+						<#if rolecode == area || rolecode == province>
+						<span class="user-info">
+							<select id="countiesId_bus" class="form-control input-small no-padding-right" name="businessinfo.counties">
+								<option value="">--请选择--</option>
+							</select>
+						</span>
+						<#elseif rolecode == city>
+						<span class="user-info">
+							<select id="countiesId_bus" class="form-control input-small no-padding-right" name="businessinfo.counties">
+								<option value="">--请选择--</option> 
+								<#list countiesList as counties>
+								<option value="${(counties.regioncode!'')}" >${(counties.regionname!"")}</option>
+								</#list>
+							</select>
+						</span>
+						</#if>
+					</div>
+				</div>
+				</#if>
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right">联系人</label>
+					<div class="col-sm-8">
+						<input type="text" name="businessinfo.person" value=""
+							placeholder="请输入联系人" class="form-control input-large">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right">联系方式</label>
+					<div class="col-sm-8">
+						<input type="text" name="businessinfo.phone" value=""
+							placeholder="请输入联系方式" class="form-control input-medium">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right">地址</label>
+					<div class="col-sm-8">
+						<input type="text" name="businessinfo.address"
+							value="" placeholder="请输入地址" class="form-control input-xxlarge">
+					</div>
+				</div>
+	</form>
+	</div>
+	</div>
+</div>
+<div class="modal-footer">
+	<button data-dismiss="modal" class="btn btn-sm pull-left">
+		<i class="ace-icon fa fa-times"></i> 取消
+	</button>
+	<button type="reset" class="btn btn-sm btn-warning" id="clear_btn"><i class="ace-icon fa fa-undo"></i>重置</button>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<button id="saveBtn" onclick="form_submit();return false"
+		class="btn btn-sm btn-primary">
+		<i class="ace-icon fa fa-check"></i> 保存
+	</button>
+</div>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#add-shop-from').bootstrapValidator({
+			message: '输入不正确',
+			feedbackIcons: {
+	            valid: 'glyphicon glyphicon-ok',
+	            invalid: 'glyphicon glyphicon-remove',
+	            validating: 'glyphicon glyphicon-refresh'
+	        },
+	        fields: {
+	        	'businessinfo.busname': {
+	                validators: {
+	                    notEmpty: {
+	                        message: '请输入店铺名称!'
+	                    },
+	                    stringLength: {
+	                        min: 1,
+	                        max: 30,
+	                        message: '输入长度不能超过30个字符'
+	                    },
+	                    remote: {
+	                        url: 'businessinfo/checkName',
+	                        message: '该店铺已经存在！'
+	                    }
+	                }
+	            },
+	            'businessinfo.person': {
+	                validators: {
+	                    notEmpty: {
+	                        message: '请输入联系人!'
+	                    },
+	                    stringLength: {
+	                        min: 1,
+	                        max: 30,
+	                        message: '输入长度不能超过30个字符'
+	                    }
+	                }
+	            },
+	            'businessinfo.phone': {
+	                validators: {
+	                    notEmpty: {
+	                        message: '请输入联系方式！'
+	                    },
+	                    stringLength: {
+	                        min: 1,
+	                        max: 30,
+	                        message: '输入长度不能超过30个字符'
+	                    },
+	                    regexp: {
+	                        regexp: /^[0-9-]+$/,
+	                        message: '联系方式只能输入数字和-'
+	                    }
+	                }
+	            },
+	            'businessinfo.address': {
+	                validators: {
+	                    notEmpty: {
+	                        message: '请输入联系地址!'
+	                    },
+	                    stringLength: {
+	                        min: 1,
+	                        max: 300,
+	                        message: '输入长度不能超过300个字符'
+	                    }
+	                }
+	            }
+	        }
+		});
+		
+		$("#clear_btn").click(function() {
+			$('#add-shop-from').data('bootstrapValidator').resetForm(true);
+			if(${curRole}==${AREAS}){
+				$("#provinceId_bus").get(0).selectedIndex = 0;
+				getProvinceInfo({value:""});
+			}
+			if(${curRole}==${PROVINCES}){
+				$("#cityId_bus").get(0).selectedIndex = 0;
+				getCityInfo({value:""});
+			}
+			if(${curRole}==${CITYS}){
+				$("#countiesId_bus").get(0).selectedIndex = 0;
+			}
+			
+		});
+	});
+	function form_submit(){
+		var form = $("#modal form");
+		form.bootstrapValidator('validate');
+		var bv = form.data('bootstrapValidator');
+		
+		if(bv.$invalidFields.size() == 0) {
+			$("#saveBtn").attr({"disabled":"disabled"});
+			var queryString = form.formSerialize();
+			$.post(
+					"businessinfo/addBusinessinfo",
+					queryString,
+					function(data) {
+						if(data.status == "1"){
+							window.location.href="${CPATH}/businessinfo";
+						}else{
+							$("#modal .modal-body .alert").remove();
+							$("#modal .modal-body").prepend('<div class="alert alert-block alert-danger"><button data-dismiss="alert" class="close" type="button"><i class="ace-icon fa fa-times"></i></button>'+data.msg+'</div>');
+							$("#shopNameId")[0].style.color = "#D16E6C";
+							$("#shopNameId").focus(function(){
+					            $(this)[0].style.color = "#7BA065";
+					        });
+						}
+					},
+				"json"
+			);
+		}
+	}
+	
+function getSelValue(nextSelObjId, urlStr, formArg, curSelObj){
+	$('#'+nextSelObjId).empty();
+	var nextSelect = $('#'+nextSelObjId);
+	
+	nextSelect.append('<option value="">--请选择--</option>');
+	if(curSelObj.value != "") {
+		$.ajax({
+			type : "post",
+			url : urlStr,
+			data : formArg+"="+curSelObj.value,
+			dataType : "json",
+			success : function(data) {
+				$.each(data, function(n, data) {
+					nextSelect.append('<option value="'+data.regioncode+'">' + data.regionname + '</option>');
+				});
+			}
+		});
+	}
+}
+function getProvinceInfo(provinceInfo){
+	getSelValue("cityId_bus", "site/getCityList", "provinceid", provinceInfo);
+	getCityInfo({value:""});
+}
+function getCityInfo(cityInfo){
+	
+	getSelValue("countiesId_bus", "site/getCountiesList", "countiesid", cityInfo);
+}
+</script>

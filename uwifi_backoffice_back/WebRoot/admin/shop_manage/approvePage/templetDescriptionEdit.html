@@ -1,0 +1,55 @@
+<#include "/admin/layout/layout_shop.html" /> <@layout>
+
+<div class="page-header">
+	<h1><p>
+			认证页面 <i
+			class="ace-icon fa fa-angle-double-right"></i> 模板管理 <small> <i
+			class="ace-icon fa fa-angle-double-right"></i> 修改模板
+		</small>
+	   </p>
+	</h1>
+</div>
+<form class="form-horizontal" id="add-flash-form" role="form" action="templetdescrip/editTempletDescript/${(templetinfo.id)}" method="post">
+
+	<div class="form-group">
+		<label class="col-sm-3 control-label no-padding-right"
+			for="form-field-1"> 模板名称  </label>
+
+		<div class="col-sm-9">
+			<input type="text" name="templetinfo.displayname" class="col-xs-10 col-sm-5" value="${templetinfo.displayname!''}">
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-3 control-label no-padding-right"
+			for="form-field-1"> 模板描述  </label>
+
+		<div class="col-sm-9">
+			<textarea rows="8" cols="3" name="templetinfo.remark" class="col-xs-10 col-sm-5" >${templetinfo.remark!''}</textarea>
+		</div>
+	</div>
+
+
+	<div class="space-4"></div>
+
+
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-3 col-md-9">
+			<button class="btn btn-info" type="submit" >
+				<i class="ace-icon fa fa-check bigger-110"></i> 提交
+			</button>
+
+			&nbsp; &nbsp; &nbsp;
+			<button class="btn" type="button" id="clear_btn">
+				<i class="ace-icon fa fa-undo bigger-110"></i> 重置
+			</button>
+		</div>
+	</div>
+
+
+</form>
+<script type="text/javascript">
+
+</script>
+</script>
+</@layout>

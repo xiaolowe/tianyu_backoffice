@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base href="${CPATH}/" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta charset="utf-8" />
+<title>众点WiFi运营管理平台</title>
+
+<meta name="description" content="User login page" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+<link rel="SHORTCUT ICON"
+	href="http://61.191.204.180:8002/group1/M00/00/04/CgA7AlVHMJWAOqjIAAAQt4Q9GeY934.png" />
+<!-- bootstrap & fontawesome -->
+<link rel="stylesheet" href="resources/css/bootstrap.min.css" />
+<link rel="stylesheet"
+	href="resources/font-awesome/4.2.0/css/font-awesome.min.css" />
+
+<!-- page specific plugin styles -->
+<link rel="stylesheet" href="resources/css/bootstrapValidator.min.css" />
+<link rel="stylesheet" href="resources/css/jquery-ui.custom.min.css" />
+<link rel="stylesheet" href="resources/css/chosen.css" />
+<link rel="stylesheet" href="resources/css/datepicker.css" />
+<link rel="stylesheet" href="resources/css/bootstrap-timepicker.css" />
+<link rel="stylesheet" href="resources/css/daterangepicker.css" />
+
+<!-- text fonts -->
+<!-- <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,300" /> -->
+
+<!-- ace styles -->
+<link rel="stylesheet" href="resources/css/ace.min.css"
+	id="main-ace-style" />
+
+<!--[if lte IE 9]>
+			<link rel="stylesheet" href="resources/css/ace-part2.min.css" />
+		<![endif]-->
+<link rel="stylesheet" href="resources/css/ace-skins.min.css" />
+<link rel="stylesheet" href="resources/css/ace-rtl.min.css" />
+
+<!--[if lte IE 9]>
+		  <link rel="stylesheet" href="resources/css/ace-ie.min.css" />
+		<![endif]-->
+
+<!-- common styles -->
+<link rel="stylesheet" href="resources/css/common.css" />
+
+<!-- ace settings handler -->
+<script src="resources/js/ace-extra.min.js"></script>
+
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+
+<!--[if lt IE 9]>
+		<script src="resources/js/html5shiv.js"></script>
+		<script src="resources/js/respond.min.js"></script>
+		<![endif]-->
+
+
+<!-- basic scripts -->
+
+<!--[if !IE]> -->
+<script src="resources/js/jquery/jquery-2.1.1.min.js"></script>
+<!-- <![endif]-->
+
+<!--[if IE]>
+		<script src="resources/js/jquery/jquery-1.11.1.min.js"></script>
+		<![endif]-->
+
+<!--[if !IE]> -->
+<script type="text/javascript">
+	window.jQuery
+			|| document.write("<script src='resources/js/jquery.min.js'>"
+					+ "<"+"/script>");
+</script>
+<!-- <![endif]-->
+
+<!--[if IE]>
+		<script type="text/javascript">
+		 window.jQuery || document.write("<script src='resources/js/jquery1x.min.js'>"+"<"+"/script>");
+		</script>
+		<![endif]-->
+
+<script type="text/javascript">
+	if ('ontouchstart' in document.documentElement)
+		document
+				.write("<script src='resources/js/jquery.mobile.custom.min.js'>"
+						+ "<"+"/script>");
+</script>
+
+<script src="resources/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+<!-- page specific plugin scripts -->
+<script src="resources/js/jquery.form.min.js"></script>
+<script src="resources/js/bootbox.min.js"></script>
+<script src="resources/js/bootstrapvalidator/bootstrapValidator.min.js"></script>
+<script src="resources/js/date-time/bootstrap-datepicker.min.js"></script>
+<script src="resources/js/date-time/bootstrap-timepicker.min.js"></script>
+<script src="resources/js/date-time/moment.min.js"></script>
+<script src="resources/js/date-time/daterangepicker.min.js"></script>
+<script src="resources/js/date-time/bootstrap-datepicker.zh-CN.js"></script>
+<script src="resources/js/date-time/bootstrap-datetimepicker.min.js"></script>
+
+<!-- ace scripts -->
+<script src="resources/js/ace-elements.min.js"></script>
+
+
+<script src="resources/js/common.js"></script>
+<script src="resources/kindeditor/kindeditor.js" type="text/javascript"></script>
+<script src="resources/kindeditor/lang/zh_CN.js" type="text/javascript"></script>
+
+<!--  add javascript -->
+<script type="text/javascript" src="resources/scripts/fileuploader.js"></script>
+<script language="javascript" src="resources/kindeditor/kindeditor.js"
+	type="text/javascript"></script>
+<script language="javascript" src="resources/kindeditor/lang/zh_CN.js"
+	type="text/javascript"></script>
+<script language="javascript"
+	src="resources/jquery-validation/jquery.validate.js"
+	type="text/javascript"></script>
+
+</head>
+
+<body id="login-bg">
+	<img id="login-logo" src='resources/css/images/login-logo.png' />
+	<div id="login-form">
+		<#if infoMsg??>
+		<div class="alert alert-block alert-success">
+			<button data-dismiss="alert" class="close" type="button"><i class="ace-icon fa fa-times"></i></button>
+			${infoMsg!''}
+		</div>
+		</#if>
+		<#if errorMsg??>
+		<div class="alert alert-block alert-danger">
+			<button data-dismiss="alert" class="close" type="button"><i class="ace-icon fa fa-times"></i></button>
+			${errorMsg!''}
+		</div>
+		</#if>
+<!-- 		<#if errorMsg??> -->
+<!-- 		<div id="error" class="alert alert-block alert-danger"> -->
+<!-- 			<button type="button" class="close" data-dismiss="alert"> -->
+<!-- 				<i class="ace-icon fa fa-times"></i> -->
+<!-- 			</button> -->
+<!-- 			<p>${errorMsg!""}</p> -->
+<!-- 		</div> -->
+<!-- 		</#if> -->
+		<div id="login-form-head">
+			<a href="site/register" data-target="#modal" data-toggle="modal" >注册</a>
+			<a class="active" href="#">登录</a>
+		</div>
+		<form id="login-form-body" action="site/login" method="post">
+			<input type="text" class="form-control" name="username" value="" placeholder="请输入用户名" />
+			<input type="password" class="form-control" name="password" value="" placeholder="请输入密码" /> 
+			<a class="btn-cutom-green" id="login_denglu"   >登录 </a>
+		</form>
+	</div>
+	<!-- /.main-container -->
+
+	<div class="modal fade" id="modal" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content"></div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+
+	<!-- inline scripts related to this page -->
+	<script type="text/javascript">
+		jQuery(function($) {
+		 	
+			$("#login_denglu").click(function(event){
+				event.preventDefault();
+				$("#login-form-body").submit();
+			});
+		});
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<#include "/admin/layout/layout_new.html" /> <@layout>
+<script src="resources/js/highcharts/js/highcharts.js"></script>
+<script src="resources/js/highcharts/js/modules/exporting.js"></script>
+<!-- Main Content Section with everything -->
+<!-- Page Head -->
+<style>
+<!--
+	table {
+		table-layout:fixed
+	}
+	td {
+		word-break : break-all; overflow:hidden; 
+	}
+-->
+</style>
+<div class="page-header">
+	<h1>
+		<p>我的店铺 
+			<small> <i class="ace-icon fa fa-angle-double-right"></i>绑定应用</small> &nbsp;&nbsp;&nbsp;&nbsp;
+			<small>当前店铺：${(businessinfo.busname)!''}</small>
+		<p>
+	</h1>
+</div>
+<!-- PAGE CONTENT BEGINS -->
+<div class="col-sm-12 no-padding">
+	<div class="tabbable">
+		<ul class="nav nav-tabs" id="myTab">
+			<li class="${(isHomeActive)?string('active','')}" id="busli"><a data-toggle="tab" href="#home"> 全部应用
+			</a></li>
+
+			<li class="${(isHomeActive)?string('','active')}" id="actli"><a data-toggle="tab" href="#aclist"> 已绑定的应用 </a></li>
+		</ul>
+
+		<div class="tab-content">
+			<div id="home" class="tab-pane fade ${(isHomeActive)?string('active in','')} ">
+                <form action="bindApp" method="post" id="busFrm">
+				<table class="table table-striped table-bordered table-hover">
+					<thead>
+						<tr>
+							<th width="10%">应用名</th>
+							<th width="16%">封面页</th>
+							<th width="54%">描述</th>
+							<th class="center" width="20%">操作</th>
+						</tr>
+					</thead>
+					<#if ApplicationList.getTotalRow() &gt; 0>
+					<tbody>
+						<#list ApplicationList.getList() as x>
+						<tr>
+							<td>${(x.appname!"")}</td>
+							<td><img alt="" src="${(uploadPath!'')}${(x.imgurl!'')}" height="100" width="120"></td>
+							<td>${(x.appdescription!"")}</td>
+							<td class="center">
+								<div class="hidden-sm hidden-xs action-buttons" id="operateID_${x.id}">
+								    <#if x.bindflag==1>
+								    <a class="delete red" title="取消绑定" href="bindApp/bindCancel?appid=${x.id}&busid=${businessinfo.id}&pageNo=${(ApplicationList.pageNumber)!'1'}" >取消绑定</a>
+								    <a class="delete red" href="downloadShow/appDownloadAccount?appid=${x.id}&busid=${businessinfo.id}" data-target="#modal" data-toggle="modal">下载量分析</a>
+									<#else>
+			      					<a class="delete green" title="绑定到店铺" href="bindApp/addApp?appid=${x.id}&busid=${businessinfo.id}&pageNo=${(ApplicationList.pageNumber)!'1'}" >绑定到店铺</a>
+			      					</#if>
+			  					</div>
+							</td>
+						</tr>
+						</#list>
+					</tbody>
+					<#else>
+					<tfoot>
+						<tr>
+							<td colspan="4" class="align-center">
+								<p class="font20 bolder well lighter red">还没添加应用</p>
+							</td>
+						<tr>
+					</tfoot>
+					</#if>
+
+				</table>
+				</form>
+				
+				<#if ApplicationList.getTotalRow() &gt; 0>
+				<div class="row">
+					<#include "/admin/layout/_paginateNew.html" />
+	<@paginate currentPage=ApplicationList.pageNumber totalPage=ApplicationList.totalPage actionUrl="${CPATH}/bindApp?businessid=${businessinfo.id}@unbind@" />
+
+				</div>
+				</#if>
+				
+			</div>
+			
+			<div id="aclist" class="tab-pane fade ${(isHomeActive)?string('','in active')}">
+			    <form action="bindApp" method="post" id="actFrm">
+			    <input type="hidden" name="searchType" value="2">
+				<table class="table table-striped table-bordered table-hover">
+					<thead>
+						<tr>
+							<th width="10%">应用名</th>
+							<th width="16%">封面页</th>
+							<th width="54%">描述</th>
+							<th class="center" width="20%">操作</th>
+						</tr>
+					</thead>
+					<#if bindedApplyList.getTotalRow() &gt; 0>
+					<tbody>
+						<#list bindedApplyList.getList() as x>
+						<tr>
+							<td>${(x.appname!"")}</td>
+							<td><img alt="" src="${(uploadPath!'')}${(x.imgurl!'')}" height="100" width="120"></td>
+							<td>${(x.appdescription!"")}</td>
+							<td class="center">
+								<div class="hidden-sm hidden-xs action-buttons" id="operateID_${x.id}">
+								    <a class="delete red" title="取消绑定" href="bindApp/bindCancel2?appid=${x.id}&busid=${businessinfo.id}">取消绑定</a>
+								    <a class="delete red" href="downloadShow/appDownloadAccount?appid=${x.id}&busid=${businessinfo.id}" data-target="#modal" data-toggle="modal">下载量分析</a>
+			  					</div>
+							</td>
+						</tr>
+						</#list>
+					</tbody>
+					<#else>
+					<tfoot>
+						<tr>
+							<td colspan="4" class="align-center">
+								<p class="font20 bolder well lighter red">您还没有绑定应用</p>
+							</td>
+						<tr>
+					</tfoot>
+					</#if>
+
+				</table>
+				</form>
+				
+				<#if bindedApplyList.getTotalRow() &gt; 0>
+				<div class="row">
+					<#include "/admin/layout/_paginateNew.html" />
+	<@paginate currentPage=bindedApplyList.pageNumber totalPage=bindedApplyList.totalPage actionUrl="${CPATH}/bindApp/?businessid=${businessinfo.id}@binded@" urlParas=acPage />
+
+				</div>
+				</#if>
+
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /.col -->
+<!-- PAGE CONTENT ENDS -->
+<!-- inline scripts related to this page -->
+<script type="text/javascript">
+jQuery(function($) {
+	$('#myTab a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		if($(e.target).attr('href') == "${CPATH}/bindApp/#home") drawChartNow();
+	})
+});
+
+function searchForPage(url){
+	var frm = null;
+	var cls = $("#busli").attr("class");
+	if(cls=="active"){
+		frm = $("#busFrm");
+	}else
+		frm = $("#actFrm");
+	
+	frm.attr("action",url);
+	frm.submit();
+}
+
+function bindCancel(appid, busid){
+	$.ajax({
+		type : "post",
+		url : "bindApp/bindCancel",
+		data : "appid="+appid+"&busid="+busid,
+		dataType : "json",
+		success : function(data) {
+        	if (data == 0){
+        		$("#operateID_"+appid).empty();
+        		$("#operateID_"+appid).append("<a class='delete green' href='javascript:void(0)' onclick='addApp("+appid+","+busid+")'>绑定到店铺</a>");
+        		alert('取消绑定成功。');
+			}
+			else {
+				alert('取消绑定失败。');
+			}
+		}
+	});
+}
+
+function addApp(appid, busid){
+	$.ajax({
+		type : "post",
+		url : "bindApp/addApp",
+		data : "appid="+appid+"&busid="+busid,
+		dataType : "json",
+		success : function(data) {
+        	if (data == 0){
+        		$("#operateID_"+appid).empty();
+        		$("#operateID_"+appid).append("<a class='delete red' href='javascript:void(0)' onclick='bindCancel("+appid+","+busid+")'>取消绑定</a>");
+        		alert('绑定成功。');
+			}
+			else {
+				alert('绑定失败。');
+			}
+		}
+	});
+}
+</script>
+</@layout>

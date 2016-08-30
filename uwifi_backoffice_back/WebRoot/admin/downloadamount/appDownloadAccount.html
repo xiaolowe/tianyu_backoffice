@@ -1,0 +1,178 @@
+<#include "/admin/layout/layout_new.html" /> <@layout>
+<script src="resources/js/highcharts/js/highcharts.js"></script>
+<script src="resources/js/highcharts/js/modules/exporting.js"></script>
+<script type="text/javascript">
+$(function () {
+	var searchType = $("#tempArgs").val();
+	var xaxis = ${x_array!'[]'};
+	var seriesData = ${(seriesData)!"[]"};
+	
+	if("" == searchType || "twoDays" == searchType){
+		twoDaysChart(xaxis,seriesData);
+	}
+	if("sevenDays" == searchType || "oneMonth" == searchType){
+		sevenDaysAndOneMonthChart(xaxis,seriesData);
+	}
+	
+});
+
+function twoDaysChart(xaxis,seriesData){
+	Highcharts.setOptions({ 
+	    colors: ['#00CBC7', '#BFA0DA'] 
+	});
+	$('#highchart').highcharts({
+		chart: {
+			type: 'spline',
+			borderWidth: 1
+		},
+    	credits : {  
+            enabled:false
+		},
+        title: {
+        	enabled:false,
+            text: '',
+            x: -20 //center
+        },
+        xAxis: {
+            categories: xaxis,
+            title: {               
+				text: ''
+			},
+            labels: {
+                rotation: -45,
+                align: 'right',
+                x:20,//水平偏移量
+                style: {font: 'normal 13px 宋体'}
+            }
+        },
+        yAxis: {
+        	min:0,
+        	title: {               
+        		text: '次数（次）'
+			} 
+        },
+        tooltip: {
+           	formatter: function() { 
+   				var unit = "次";
+   				return '<b>'+ this.series.name +'</b><br/>'+ this.x +': '+ this.y + unit;              
+   			} 
+        },
+        legend: {
+            layout: 'horizontal',
+            align: 'center',
+            verticalAlign: 'top',
+            borderWidth: 0
+        },
+        exporting: {           
+			enabled: false       
+		},
+        series: seriesData
+    });
+}
+
+function sevenDaysAndOneMonthChart(xaxis,seriesData){
+	$('#highchart').highcharts({
+		chart: {
+			type: 'spline',
+			borderWidth: 1
+		},
+    	credits : {  
+            enabled:false
+		},
+        title: {
+        	enabled:false,
+            text: '',
+            x: -20 //center
+        },
+        xAxis: {
+            categories: xaxis,
+            title: {               
+				text: ''
+			},
+            labels: {
+                rotation: -45,
+                align: 'right',
+                x:20,//水平偏移量
+                style: {font: 'normal 13px 宋体'}
+            }
+        },
+        yAxis: {
+        	min:0,
+        	title: {               
+        		text: '次数（次）'
+			} 
+        },
+        tooltip: {
+           	formatter: function() { 
+   				var unit = "次";
+   				return '<b>'+ this.series.name +'</b><br/>'+ this.x +': '+ this.y + unit;              
+   			} 
+        },
+        legend: {
+            layout: 'horizontal',
+            align: 'center',
+            verticalAlign: 'top',
+            borderWidth: 0
+        },
+        exporting: {           
+			enabled: false       
+		},
+        series: seriesData
+    });
+}
+</script>
+<!-- Main Content Section with everything -->
+<!-- Page Head -->
+<div class="page-header">
+	<h1>
+		<a href="dataAnalysis">数据中心</a> 
+		<small> 
+			<i class="ace-icon fa fa-angle-double-right"></i>${(apply.appname)!''}下载量分析
+		</small>
+	</h1>
+</div>
+
+<div class="row">
+	<div class="col-sm-12">
+		<p class="font15 blue bolder">${(apply.appname)!''}下载量分析</p>
+	</div>
+	<div class="col-sm-4">
+	    <form name="form1" action="downloadShow/appDownloadAccount?appid=${apply.id}" method="post">
+	    <input type="hidden" id="tempArgs" name="tempArgs" value="${(tempArgs)!''}"/>
+		<div class="radio">
+			<label>
+				<input id="twoDay" name="timeQ" type="radio" class="ace" value="twoDays" <#if tempArgs?? && (tempArgs=="twoDays" || tempArgs=="")> checked="checked" </#if>  onchange="search(this)"/>
+				<span class="lbl">最近两天</span>
+			</label>
+			<label>
+				<input id="sevenDay" name="timeQ" type="radio" class="ace" value="sevenDays" <#if tempArgs?? && tempArgs=="sevenDays"> checked="checked" </#if> onchange="search(this)"/>
+				<span class="lbl">最近七天</span>
+			</label>
+			<label>
+				<input id="oneMonth" name="timeQ" type="radio" class="ace" value="oneMonth" <#if tempArgs?? && tempArgs=="oneMonth"> checked="checked" </#if> onchange="search(this)"/>
+				<span class="lbl">最近一个月</span>
+			</label>
+		</div>
+		</form>
+	</div>
+
+	<form action="dataAnalysis/advertisement" method="post">
+	
+	</form>
+
+</div>
+
+<div class="space-12"></div>
+
+<div class="row">
+	<div class="col-sm-12" id="highchart"></div>
+</div>
+
+<!-- inline scripts related to this page -->
+<script type="text/javascript">
+function search(obj){
+	$("#tempArgs").val(obj.value);
+	form1.submit();
+}
+</script>
+</@layout>

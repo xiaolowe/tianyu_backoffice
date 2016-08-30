@@ -1,0 +1,90 @@
+* {
+    font-family: "Microsoft Yahei";
+}
+.font15 {
+	font-size: 15px;
+}
+.font20 {
+	font-size: 20px;
+}
+.font30 {
+	font-size: 30px;
+}
+.font40 {
+	font-size: 40px;
+}
+.font50 {
+	font-size: 50px;
+}
+
+.font60 {
+	font-size: 60px;
+}
+
+.font70 {
+	font-size: 70px;
+}
+
+.font80 {
+	font-size: 80px;
+}
+
+.font90 {
+	font-size: 90px;
+}
+#login-bg{
+	background:url("images/login-bg.png") no-repeat center center;
+	background-size:100% auto;
+}
+#login-logo{
+	position:absolute;
+	right:5%;
+	top:10%;
+	height:10em;
+	width:auto;
+}
+#login-form{
+	position:absolute;
+	left:10%;
+	bottom:30%;
+}
+#login-form-head a{
+	width:150px;
+	height:40px;
+	line-height:40px;
+	text-align:center;
+	color:#fff;
+	float:left;
+	background:rgba(0,0,0,0.5);	
+}
+#login-form-head a.active{
+	background:#fff;
+	color:#333;
+}
+#login-form-body{
+	background:#fff;
+	float:left;
+	padding:20px 30px;
+	width:300px;
+}
+#login-form-body .btn-cutom-green{
+	float:left;
+	width:100%;
+	text-align:center;
+	background:#8db800;
+	margin-top:10px;
+	font-size:14px;
+	color:#fff;
+	height:35px;
+	line-height:35px;
+	border-radius:3px;
+	cursor:pointer;
+}
+/* html {  */
+/*     -webkit-filter: grayscale(100%);  */
+/*     -moz-filter: grayscale(100%);  */
+/*     -ms-filter: grayscale(100%);  */
+/*     -o-filter: grayscale(100%);  */
+/*     filter:progid:DXImageTransform.Microsoft.BasicImage(grayscale=1);   */
+/*     _filter:none;  */
+/* }  */

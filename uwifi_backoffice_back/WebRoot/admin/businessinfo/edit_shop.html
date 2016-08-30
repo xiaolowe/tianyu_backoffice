@@ -1,0 +1,336 @@
+<div class="modal-header">
+	<button data-dismiss="modal" class="close" type="button">×</button>
+	<h4 class="blue bigger">修改店铺信息</h4>
+</div>
+
+<div class="modal-body">
+	<div class="row">
+	<div class="col-xs-12">
+		<form class="form-horizontal" id="edit-shop-from" role="form" method="post" action="businessinfo/addBusinessinfo">
+				<div class="form-group">
+					<label class="col-sm-2 control-label no-padding-right">店铺名称</label>
+					<div class="col-sm-9">
+						<input type="text" id="busname" name="businessinfo.busname"
+							value="${businessinfo.busname!''}" placeholder="请输入店铺名称" class="form-control input-large">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label no-padding-right">区域</label>
+					<div class="col-sm-9">
+						<#if rolecode == area>
+					    <span class="user-info">
+							<select id="provinceId_bus"  onchange="getProvinceInfo(this)" class="form-control input-small no-padding-right" name="businessinfo.province" >
+								<option value="">--请选择--</option>
+								<#list provinceList as province>
+								<option value="${(province.regioncode!'')}" <#if "${businessinfo.province!''}"=="${(province.regioncode!'')}"> selected </#if> >${(province.regionname!"")}</option>
+								</#list>
+							</select>
+						</span>
+						</#if>
+						<#if rolecode == area>
+						<span class="user-info">
+							<select id="cityId_bus" onchange="getCityInfo(this)" class="form-control input-small no-padding-right" name="businessinfo.city">
+								<option value="">--请选择--</option>
+							</select>
+						</span>
+						<#elseif rolecode == province>
+						<span class="user-info">
+							<select id="cityId_bus" onchange="getCityInfo(this)" class="form-control input-small no-padding-right" name="businessinfo.city">
+								<option value="">--请选择--</option> 
+								<#list cityList as city>
+								<option value="${(city.regioncode!'')}" <#if "${businessinfo.city!''}"=="${(city.regioncode!'')}"> selected </#if> >${(city.regionname!"")}</option>
+								</#list>
+							</select>
+						</span>
+						</#if>
+						<#if rolecode == area || rolecode == province>
+						<span class="user-info">
+							<select id="countiesId_bus" class="form-control input-small no-padding-right" name="businessinfo.counties">
+								<option value="">--请选择--</option>
+							</select>
+						</span>
+						<#elseif rolecode == city>
+						<span class="user-info">
+							<select id="countiesId_bus" class="form-control input-small no-padding-right" name="businessinfo.counties">
+								<option value="">--请选择--</option> 
+								<#list countiesList as counties>
+								<option value="${(counties.regioncode!'')}" <#if "${businessinfo.counties!''}"=="${(counties.regioncode!'')}"> selected </#if>>${(counties.regionname!"")}</option>
+								</#list>
+							</select>
+						</span>
+						</#if>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label no-padding-right">联系人</label>
+					<div class="col-sm-9">
+						<input type="text" id="person" name="businessinfo.person" value="${businessinfo.person!''}"
+							placeholder="请输入联系人" class="form-control input-large">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label no-padding-right">联系方式</label>
+					<div class="col-sm-9">
+						<input type="text" id="phone" name="businessinfo.phone" value="${businessinfo.phone!''}"
+							placeholder="请输入联系方式" class="form-control input-medium">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label no-padding-right">地址</label>
+					<div class="col-sm-9">
+						<input type="text" id="address" name="businessinfo.address"
+							value="${businessinfo.address!''}" placeholder="请输入地址" class="form-control input-xxlarge">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label no-padding-right">apk文件</label>
+					<div class="col-sm-9">
+						 <div id="upload-container2" class="btn btn-sm btn-primary"></div>
+			              <img id="showload2" src="resources/images/loading.gif" style="display: none">
+			               <span class="red">*上传(apk)格式文件</span>
+						 <input type="text" name="businessinfo.apkurl" id="cover2"  class="col-xs-7" value="${(businessinfo.apkurl)!''}"  readonly>
+					</div>
+				</div>
+				<input type="hidden" name="businessinfo.id" value="${businessinfo.id!''}" />
+	</form>
+	</div>
+	</div>
+</div>
+<div class="modal-footer">
+	<button data-dismiss="modal" class="btn btn-sm pull-left">
+		<i class="ace-icon fa fa-times"></i> 取消
+	</button>
+	<button type="button" class="btn btn-sm btn-warning" id="clear_btn"><i class="ace-icon fa fa-undo"></i>重置</button>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<button onclick="form_submit();return false"
+		class="btn btn-sm btn-primary">
+		<i class="ace-icon fa fa-check"></i> 保存
+	</button>
+</div>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#edit-shop-from').bootstrapValidator({
+			message: '输入不正确',
+			feedbackIcons: {
+	            valid: 'glyphicon glyphicon-ok',
+	            invalid: 'glyphicon glyphicon-remove',
+	            validating: 'glyphicon glyphicon-refresh'
+	        },
+	        fields: {
+	        	'businessinfo.busname': {
+	                validators: {
+	                    notEmpty: {
+	                        message: '请输入店铺名称!'
+	                    },
+	                    stringLength: {
+	                        min: 1,
+	                        max: 30,
+	                        message: '输入长度不能超过30个字符'
+	                    }
+	                }
+	            },
+	            'businessinfo.person': {
+	                validators: {
+	                    notEmpty: {
+	                        message: '请输入联系人!'
+	                    },
+	                    stringLength: {
+	                        min: 1,
+	                        max: 30,
+	                        message: '输入长度不能超过30个字符'
+	                    }
+	                }
+	            },
+	            'businessinfo.phone': {
+	                validators: {
+	                    notEmpty: {
+	                        message: '请输入联系方式！'
+	                    },
+	                    stringLength: {
+	                        min: 1,
+	                        max: 30,
+	                        message: '输入长度不能超过30个字符'
+	                    },
+	                    regexp: {
+	                        regexp: /^[0-9-]+$/,
+	                        message: '联系方式只能输入数字和-'
+	                    }
+	                }
+	            },
+	            'businessinfo.address': {
+	                validators: {
+	                    notEmpty: {
+	                        message: '请输入联系地址!'
+	                    },
+	                    stringLength: {
+	                        min: 1,
+	                        max: 300,
+	                        message: '输入长度不能超过300个字符'
+	                    }
+	                }
+	            }
+	        }
+		});
+		
+		$("#clear_btn").click(function() {
+			$('#edit-shop-from').data('bootstrapValidator').resetForm(true);
+			if(${curRole}==${AREAS}){
+				$("#provinceId_bus").get(0).selectedIndex = 0;
+				getProvinceInfo({value:""});
+			}
+			if(${curRole}==${PROVINCES}){
+				$("#cityId_bus").get(0).selectedIndex = 0;
+				getCityInfo({value:""});
+			}
+			if(${curRole}==${CITYS}){
+				$("#countiesId_bus").get(0).selectedIndex = 0;
+			}
+			
+		});
+	});
+	function form_submit(){
+		var form = $("#modal form");
+		form.bootstrapValidator('validate');
+		var bv = form.data('bootstrapValidator');
+		
+		if(bv.$invalidFields.size() == 0) {
+			
+			var queryString = form.formSerialize();
+			$.post(
+					"businessinfo/editBusinessinfo",
+					queryString,
+					function(data) {
+						if(data.status == "1"){
+							window.location.href="${CPATH}/businessinfo/${currentPage!'1'}-dp-${searchName!''}";
+						}else{
+							$("#modal .modal-body .alert").remove();
+							$("#modal .modal-body").prepend('<div class="alert alert-block alert-danger"><button data-dismiss="alert" class="close" type="button"><i class="ace-icon fa fa-times"></i></button>'+data.msg+'</div>');
+						}
+					},
+				"json"
+			);
+		}
+	}
+jQuery(function($) {
+	var citycode = "${(businessinfo.city)!''}";
+	var countiescode = "${(businessinfo.counties)!''}";
+	
+	var areaStr = "${(AREAS)!''}";
+	var provinceStr = "${(PROVINCES)!''}";
+	var cityStr = "${(CITYS)!''}";
+	var userrole = "${(curRole)!''}";
+	
+	if(userrole==areaStr){
+		//加载城市选择框
+		commonAjax("provinceId_bus", "cityId_bus", "site/getCityList", "provinceid", citycode);
+		//加载区县选择框
+		commonAjax("cityId_bus", "countiesId_bus", "site/getCountiesList", "countiesid", countiescode);
+	}
+	if(userrole==provinceStr){
+		//加载区县选择框
+		commonAjax("cityId_bus", "countiesId_bus", "site/getCountiesList", "countiesid", countiescode);
+	}
+	
+});
+
+function commonAjax(curSelId, nexSelId, urlStr, formArgs, nexSelValue){
+	var curselectvalue = $('#'+curSelId).val();
+	if(curselectvalue != "") {
+		$('#'+nexSelId).empty();
+		var selObj = $('#'+nexSelId);
+		selObj.append('<option value="">--请选择--</option>');
+		
+		$.ajax({
+			type : "post",
+			url : urlStr,
+			async: false,
+			data : formArgs+"="+curselectvalue,
+			dataType : "json",
+			success : function(data) {
+				$.each(data, function(key, item) {
+					if(item.regioncode == nexSelValue) {
+						selObj.append('<option value="'+item.regioncode+'" selected="selected">' + item.regionname + '</option>');
+					} else {
+						selObj.append('<option value="'+item.regioncode+'">'+ item.regionname + '</option>');
+					}
+					
+				});
+			}
+		});
+	}
+}
+
+function getSelValue(nextSelObjId, urlStr, formArg, curSelObj){
+	$('#'+nextSelObjId).empty();
+	var nextSelect = $('#'+nextSelObjId);
+	
+	nextSelect.append('<option value="">--请选择--</option>');
+	if(curSelObj.value != "") {
+		$.ajax({
+			type : "post",
+			url : urlStr,
+			data : formArg+"="+curSelObj.value,
+			dataType : "json",
+			success : function(data) {
+				$.each(data, function(n, data) {
+					nextSelect.append('<option value="'+data.regioncode+'">' + data.regionname + '</option>');
+				});
+			}
+		});
+	}
+}
+function getProvinceInfo(provinceInfo){
+	getSelValue("cityId_bus", "site/getCityList", "provinceid", provinceInfo);
+	getCityInfo({value:""});
+}
+function getCityInfo(cityInfo){
+	
+	getSelValue("countiesId_bus", "site/getCountiesList", "countiesid", cityInfo);
+}
+
+$(document).ready(function(){
+	
+	var apiUrl = '';
+
+	 if ($('#cover2').val())
+	    {
+	        $('#cover2').focus();
+	        var url = "${(uploadPath!"")}" + $('#cover2').val();
+	    }
+
+    /**
+     * 上传控件
+     */
+    var uploader2 = new qq.FileUploader({
+        element: $('#upload-container2')[0],
+        action: 'site/loadFileImage',
+        allowedExtensions: ['apk'],
+        sizeLimit: 1024*1024*20,
+        params: {
+        },
+        onSubmit: function(id, fileName)
+        {
+            return true;
+        },
+        onComplete: function(id, fileName, responseJSON)
+        {
+            if (responseJSON.error != undefined)
+            {
+                return false;
+            }
+
+            setTimeout(function(){
+                $('#cover2').val(responseJSON.fileId);  //改
+                $('#cover2').focus();
+            }, 1000);
+
+            return true;
+        },
+        showMessage: function(message)
+        {
+            doAlert(message);
+        }
+    });
+
+});
+</script>

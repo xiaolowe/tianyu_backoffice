@@ -1,0 +1,197 @@
+<style type="text/css">
+<!--
+.modal-dialog {
+   width:95%;
+}
+.modal-header {
+   height:50px;
+}
+-->
+</style>
+<script type="text/javascript">
+$(function () {
+// 	var searchType = $("#tempArgs").val();
+	var xaxis = ${x_array!'[]'};
+	var seriesData = ${(seriesData)!"[]"};
+	
+// 	if("" == searchType || "twoDays" == searchType){
+		twoDaysChart(xaxis,seriesData,"first");
+// 	}
+// 	if("sevenDays" == searchType || "oneMonth" == searchType){
+// 		sevenDaysAndOneMonthChart(xaxis,seriesData);
+// 	}
+});
+
+function twoDaysChart(xaxis,seriesData,isFirst){
+	if(isFirst){
+		$("#highchart").width($(document.body).width()-100);
+	}
+	
+	Highcharts.setOptions({ 
+	    colors: ['#00CBC7', '#BFA0DA'] 
+	});
+	
+	$('#highchart').highcharts({
+		chart: {
+			reflow: true,
+			type: 'spline',
+			borderWidth: 1
+		},
+    	credits : {  
+            enabled:false
+		},
+        title: {
+        	enabled:false,
+            text: '',
+            x: -20 //center
+        },
+        xAxis: {
+            categories: xaxis,
+            title: {               
+				text: ''
+			},
+            labels: {
+                rotation: -45,
+                //align: 'right',
+                x:20,//水平偏移量
+                style: {font: 'normal 13px 宋体'}
+            }
+        },
+        yAxis: {
+        	min:0,
+        	title: {               
+        		text: '次数（次）'
+			} 
+        },
+        tooltip: {
+           	formatter: function() { 
+   				var unit = "次";
+   				return '<b>'+ this.series.name +'</b><br/>'+ this.x +': '+ this.y + unit;              
+   			} 
+        },
+        legend: {
+            layout: 'horizontal',
+            align: 'center',
+            verticalAlign: 'top',
+            borderWidth: 0
+        },
+        exporting: {           
+			enabled: false       
+		},
+        series: seriesData
+    });
+}
+
+function sevenDaysAndOneMonthChart(xaxis,seriesData){
+	$('#highchart').highcharts({
+		chart: {
+			reflow: true,
+			type: 'spline',
+			borderWidth: 1
+		},
+    	credits : {  
+            enabled:false
+		},
+        title: {
+        	enabled:false,
+            text: '',
+            x: -20 //center
+        },
+        xAxis: {
+            categories: eval("("+xaxis+")"),
+            title: {               
+				text: ''
+			},
+            labels: {
+                rotation: -45,
+                align: 'right',
+                x:20,//水平偏移量
+                style: {font: 'normal 13px 宋体'}
+            }
+        },
+        yAxis: {
+        	min:0,
+        	title: {               
+        		text: '次数（次）'
+			} 
+        },
+        tooltip: {
+           	formatter: function() { 
+   				var unit = "次";
+   				return '<b>'+ this.series.name +'</b><br/>'+ this.x +': '+ this.y + unit;              
+   			} 
+        },
+        legend: {
+            layout: 'horizontal',
+            align: 'center',
+            verticalAlign: 'top',
+            borderWidth: 0
+        },
+        exporting: {           
+			enabled: false       
+		},
+        series: eval("("+seriesData+")")
+    });
+}
+</script>
+<div class="modal-header">
+	<button data-dismiss="modal" class="close" type="button">×</button>
+	<h4 class="blue bigger">安卓助手下载量</h4>
+</div>
+<div class="modal-body" style="margin-right:10px;" >
+<div class="row">
+	<div class="col-sm-12">
+	    <form name="form1" id="form1" action="downloadShow/mobileAssistant" method="post">
+	    <input type="hidden" id="tempArgs" name="tempArgs" value="${(tempArgs)!''}"/>
+	    <input type="hidden" name="bussinessidStr" value="${(bussinessidStr)!''}"/>
+		<div class="radio">
+			<label>
+				<input id="twoDay" name="timeQ" type="radio" class="ace" value="twoDays" checked="checked" onchange="search(this)"/>
+				<span class="lbl">最近两天</span>
+			</label>
+			<label>
+				<input id="sevenDay" name="timeQ" type="radio" class="ace" value="sevenDays" onchange="search(this)"/>
+				<span class="lbl">最近七天</span>
+			</label>
+			<label>
+				<input id="oneMonth" name="timeQ" type="radio" class="ace" value="oneMonth" onchange="search(this)"/>
+				<span class="lbl">最近一个月</span>
+			</label>
+		</div>
+		</form>
+	</div>
+
+</div>
+
+<div class="space-12"></div>
+
+<div class="row">
+	<div class="col-sm-12" id="highchart"></div>
+</div>
+</div>
+
+<!-- inline scripts related to this page -->
+<script type="text/javascript">
+function search(obj){
+	$("#tempArgs").val(obj.value);
+	var param = $("#form1").serialize();
+	$.ajax({
+		url : "downloadShow/mobileAssistant",
+		type : "post",
+		dataType : "json",
+		data : param,
+		success : function(data) {
+			var searchType = $("#tempArgs").val();
+			var xaxis = data.status;
+			var seriesData = data.msg;
+			if("twoDays" == searchType){
+				twoDaysChart(eval("("+xaxis+")"),eval("("+seriesData+")"));
+			}
+			if("sevenDays" == searchType || "oneMonth" == searchType){
+				sevenDaysAndOneMonthChart(xaxis,seriesData);
+			}
+
+		}
+	});
+}
+</script>

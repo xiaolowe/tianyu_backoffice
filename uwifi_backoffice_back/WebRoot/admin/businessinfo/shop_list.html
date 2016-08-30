@@ -1,0 +1,568 @@
+<#include "/admin/layout/layout_new.html" />
+ <@layout>
+ <script src="resources/js/highcharts/js/highcharts.js"></script>
+<script src="resources/js/highcharts/js/modules/exporting.js"></script>
+<!-- Main Content Section with everything -->
+<!-- Page Head -->
+<style>
+<!--
+	table {
+		table-layout:fixed
+	}
+	td {
+		word-break : break-all; overflow:hidden; 
+		text-align: center;	
+	}
+	th {
+		text-align : center;
+	}
+-->
+</style>
+<div class="page-header">
+	<h1>
+		<p>我的店铺 <small> <i class="ace-icon fa fa-angle-double-right"></i>
+			店铺一览
+		</small> <p>
+	</h1>
+</div>
+<!-- PAGE CONTENT BEGINS -->
+<div class="col-sm-12 no-padding">
+	<div class="tabbable">
+		<ul class="nav nav-tabs" id="myTab">
+			<li class="${(isHomeActive)?string('active','')}" id="busli"><a data-toggle="tab" href="#home"> 已创建的店铺
+			</a></li>
+
+			<li class="${(isHomeActive)?string('','active')}" id="actli"><a data-toggle="tab" href="#aclist"> 使用中的路由器 </a></li>
+		</ul>
+
+		<div class="tab-content">
+			<div id="home" class="tab-pane fade ${(isHomeActive)?string('active in','')} ">
+				<div class="row">
+					<div class="well well-sm col-xs-12">
+						<#if curRole != ADMINS>
+						<div class="col-sm-2">
+							<a class="btn btn-info btn-sm" href="businessinfo/addBusinessinfo" data-target="#modal" data-toggle="modal">
+								<i class="ace-icon fa fa-building align-top bigger-110"></i>
+								添加新店铺
+							</a>
+						</div>
+						</#if>
+						<form action="businessinfo" method="post" id="busFrm">
+						<span id="businessAddress">
+						<div class="col-sm-7">
+							<span class="user-info" >
+								<select id="areaId-bus" name="areaNAME" onchange="getAreaInfoBusiness(this)"  style="width:100px;">
+									<option value="">--请选择--</option>
+									<#if areaList??>
+									<#list areaList as x>
+									<option value="${(x.codevalue)!''}"  <#if areaNAME?? && areaNAME=="${(x.codevalue)!''}"> selected </#if> >${(x.codename)!''}</option>
+									</#list>
+									</#if>
+								</select>
+							</span>&nbsp;&nbsp;
+							<span class="user-info">
+								<select id="provinceId-bus" name="provinceNAME" style="width:100px;" onchange="getProvinceInfoBusiness(this)">
+									<option value="">--请选择--</option> 
+									<#if provinceShopList??>
+									<#list provinceShopList as province>
+										<#if provinceNAME = province.regioncode >
+											<option value="${(province.regioncode!'')}" selected="selected" >${(province.regionname!"")}</option>
+										<#else>
+											<option value="${(province.regioncode!'')}">${(province.regionname!"")}</option>
+										</#if>
+									</#list>
+									</#if>
+								</select>
+							</span>
+							&nbsp;&nbsp;
+							<span class="user-info">
+								<select id="cityId-bus" name="cityNAME" style="width:100px;" onchange="getCityInfoBusiness(this)">
+									<option value="">--请选择--</option> 
+									<#if cityShopList??>
+									<#list  cityShopList as city>
+										<#if cityNAME = city.regioncode >
+											<option value="${(city.regioncode!'')}" selected="selected" >${(city.regionname!"")}</option>
+										<#else>
+											<option value="${(city.regioncode!'')}">${(city.regionname!"")}</option>
+										</#if>
+									</#list>
+									</#if>
+								</select>
+							</span>
+							&nbsp;&nbsp;
+							<span class="user-info">
+								<select id="countiesId-bus" name="countiesNAME" style="width:100px;">
+									<option value="">--请选择--</option> 
+									<#if countiesShopList??>
+									<#list countiesShopList as counties>
+										<#if countiesNAME = counties.regioncode >
+											<option value="${(counties.regioncode!'')}" selected="selected" >${(counties.regionname!"")}</option>
+										<#else>
+											<option value="${(counties.regioncode!'')}">${(counties.regionname!"")}</option>
+										</#if>
+									</#list>
+									</#if>
+								</select>
+							</span>
+						</div>
+						</span>
+						<div class="col-sm-2">
+								<div class="input-group">
+									<input type="text" placeholder="请输入店铺名称"
+										class="form-control search-query" name="busname1" size="60"
+										value="${(busname1!'')}">
+								</div>
+						</div>
+						<div class="col-sm-1">
+							<button class="btn btn-purple btn-sm" type="submit">
+								查询 <i class="ace-icon fa fa-search icon-on-right bigger-110"></i>
+							</button>
+						</div>
+						</form>
+						
+						<div class="col-sm-1 no-padding-right">
+							<button class="btn btn-purple btn-sm" onclick="expDataBusinessinfo()" >
+								下载报表
+							</button>
+						</div>
+					</div>
+
+				</div>
+
+				<table class="table table-striped table-bordered table-hover">
+					<thead>
+						<tr>
+							<th  colspan="2">店铺名称</th>
+							<th >联系人</th>
+							<th >联系方式</th>
+							<th >渠道号</th>
+							<th width="8%">已有路由器</th>
+							<th>创建时间</th>
+							<th width="22%">操作</th>
+						</tr>
+					</thead>
+
+					<#if businessinfoPage.getList().size() &gt; 0>
+					<tbody>
+						<#list businessinfoPage.getList() as x>
+						<tr>
+							<td class="center">${(x.busname!"")}</td>
+							<td class="center"><a href="businessinfo/editShop?businessid=${(x.id!'')}"  class="btn btn-xs btn-warning">
+									<i class="ace-icon fa fa-building align-top"></i> 店铺装修
+								</a></td>
+							<td class="center">${(x.person!"")}</td>
+							<td class="center">${(x.phone!"")}</td>
+							<td class="center">${(x.apkname!"")}</td>
+							<td class="center"><span
+								class="label label-sm label-success">${(x.count!'0')}台</span></td>
+							<td class="center">${(x.addtime)?string('yyyy-MM-dd
+								HH:mm:ss')}</td>
+							<td class="center">
+								<div class="action-buttons">
+<!-- 								<a href="bindApp?businessid=${(x.id!'')}"  class="btn btn-xs btn-warning"> -->
+<!-- 									<i class="ace-icon fa fa-building align-top"></i> 绑定应用 -->
+<!-- 								</a> -->
+								<a class="btn btn-xs btn-info" href="downloadShow/mobileAssistant/${x.id}-${(businessinfoPage.pageNumber)!'1'}-${(busname1!'')}" data-target="#modal" data-toggle="modal"> 安卓助手下载量</a>
+								
+								<#if curRole != ADMINS>
+									<a class="btn btn-xs btn-info" href="businessinfo/editBusinessinfo/${x.id}-${(businessinfoPage.pageNumber)!'1'}-${(busname1!'')}" data-target="#modal" data-toggle="modal"> 编辑</a>
+								</#if>
+								<#if curRole == ADMINS || selfid == x.userid>
+									<a class="delete btn btn-xs btn-danger" href="${CPATH}/businessinfo/delete/${x.id}-${(businessinfoPage.pageNumber)!'1'}-${(busname1!'')}" title="您确定要删除吗？"> 删除</a>
+								</#if>
+								</div>
+							</td>
+						</tr>
+						</#list>
+					</tbody>
+					<#else>
+					<tfoot>
+						<tr>
+							<td colspan="7" class="align-center">
+								<p class="font20 bolder well lighter red">您还没有创建<#if searchType = '1' >该</#if>店铺</p>
+							</td>
+						<tr>
+					</tfoot>
+					</#if>
+				</table>
+				
+				<#if businessinfoPage.getList().size() &gt; 0>
+					<div class="row">
+					<div class="col-xs-1">
+						<div class="dataTables_info" id="sample-table-2_info" role="status"
+							aria-live="polite">总数：${(businessinfoPage.totalRow)} </div>
+						</div>
+						<#include "/admin/layout/_paginateBySearch.html" />
+		<@paginate currentPage=businessinfoPage.pageNumber totalPage=businessinfoPage.totalPage actionUrl="${CPATH}/businessinfo/" />
+	
+					</div>
+				</#if>
+			</div>
+			
+			<div id="aclist" class="tab-pane fade ${(isHomeActive)?string('','in active')}">
+				<div class="row">
+					<div class="well well-sm col-xs-12">
+						<#if curRole != ADMINS>
+						<div class="col-sm-2">
+							<a class="btn btn-success btn-sm" href="acinfo/addAcinfo" data-target="#modal" data-toggle="modal">
+								<i class="ace-icon fa fa-wifi align-top bigger-110"></i> 添加新路由
+							</a>
+						</div>
+						</#if>
+						<form action="businessinfo" method="post" id="actFrm">
+						<span id="acinfoAddress">
+						<div class="col-sm-6">
+							<span class="user-info" >
+								<select id="areaId-rout" name="areaNAME" onchange="getAreaInfoRout(this)"  style="width:100px;">
+									<option value="">--请选择--</option>
+									<#if areaList??>
+									<#list areaList as x>
+									<option value="${(x.codevalue)!''}"  <#if areaNAME?? && areaNAME=="${(x.codevalue)!''}"> selected </#if> >${(x.codename)!''}</option>
+									</#list>
+									</#if>
+								</select>
+							</span>&nbsp;&nbsp;
+							<span class="user-info">
+								<select id="provinceId-rout" name="provinceNAME" style="width:100px;" onchange="getProvinceInfoRout(this)">
+									<option value="">--请选择--</option> 
+									<#if provinceList??>
+									<#list provinceList as province>
+										<#if provinceNAME = province.regioncode >
+											<option value="${(province.regioncode!'')}" selected="selected" >${(province.regionname!"")}</option>
+										<#else>
+											<option value="${(province.regioncode!'')}">${(province.regionname!"")}</option>
+										</#if>
+									</#list>
+									</#if>
+								</select>
+							</span>
+							&nbsp;&nbsp;
+							<span class="user-info">
+								<select id="cityId-rout" name="cityNAME" style="width:100px;" onchange="getCityInfoRout(this)">
+									<option value="">--请选择--</option> 
+									<#if cityList??>
+									<#list cityList as city>
+										<#if cityNAME = city.regioncode >
+											<option value="${(city.regioncode!'')}" selected="selected" >${(city.regionname!"")}</option>
+										<#else>
+											<option value="${(city.regioncode!'')}">${(city.regionname!"")}</option>
+										</#if>
+									</#list>
+									</#if>
+								</select>
+							</span>
+							&nbsp;&nbsp;
+							<span class="user-info">
+								<select id="countiesId-rout" name="countiesNAME" style="width:100px;">
+									<option value="">--请选择--</option> 
+									<#if countiesList??>
+									<#list countiesList as counties>
+										<#if countiesNAME = counties.regioncode >
+											<option value="${(counties.regioncode!'')}" selected="selected" >${(counties.regionname!"")}</option>
+										<#else>
+											<option value="${(counties.regioncode!'')}">${(counties.regionname!"")}</option>
+										</#if>
+									</#list>
+									</#if>
+								</select>
+							</span>
+						</div>
+						</span>
+						<div class="col-sm-2">
+							<input type="text" placeholder="请输入设备编号"
+										class="form-control search-query" name="acid" size="60"
+										value="${(acid!'')}"> 
+						</div>
+						<div class="col-sm-2">
+							<input type="text" placeholder="请输入所属店铺名称"
+										class="form-control search-query" name="busname2" size="60"
+										value="${(busname2!'')}"> 
+						</div>
+<!-- 						<div class="col-sm-2"> -->
+<!-- 							<input type="text" placeholder="请输入设备编号" -->
+<!-- 										class="form-control search-query" name="acid" size="60" -->
+<!-- 										value="${(acid!'')}"> 	 -->
+<!-- 						</div> -->
+						<input type="hidden" name="searchType" value="2">
+						<div class="col-sm-1">
+							<span class="input-group-btn">
+								<button class="btn btn-purple btn-sm" type="submit">
+									查询 <i class="ace-icon fa fa-search icon-on-right bigger-110"></i>
+								</button>
+							</span>
+						</div>
+						</form>
+						
+						<div class="col-sm-1 no-padding-right">
+							<button class="btn btn-purple btn-sm" onclick="expDataAcinfo()" >
+								下载报表
+							</button>
+						</div>
+					</div>
+
+				</div>
+
+				<table class="table table-striped table-bordered table-hover">
+					<thead>
+						<tr>
+							<th>设备编号</th>
+							<th>所属店铺</th>
+							<th>WiFi信号名称</th>
+							<th>创建时间</th>
+							<th class="center">操作</th>
+						</tr>
+					</thead>
+
+					<#if acinfoPage.getList().size() &gt; 0>
+					<tbody>
+						<#list acinfoPage.getList() as x>
+						<tr>
+						
+							<td>${(x.acid!"")}</td>
+							<td>${(x.busname!"")}</td>
+							<td>${(x.eqptssid!"")}</td>
+							<td class="center">${(x.addtime)?string('yyyy-MM-dd
+								HH:mm:ss')}</td>
+							<td class="center">
+								<div class="action-buttons">
+									<a class="green" href="acconfig/editAcconfig/${(x.acid!'')}-${(acinfoPage.pageNumber)!'1'}" title="参数配置" data-target="#modal" data-toggle="modal"> <i
+										class="ace-icon fa fa-align-justify bigger-130"></i>
+									</a> 
+									<#if curRole != ADMINS>
+									<a class="green" href="acinfo/editAcinfo/${(x.id!'')}-${(acinfoPage.pageNumber)!'1'}-${(busname2!'')}-${(acid!'')}" title="编辑" data-target="#modal" data-toggle="modal"> <i
+										class="ace-icon fa fa-pencil bigger-130"></i>
+									</a>
+									</#if>
+									<#if curRole == ADMINS >
+									 <a class="delete red" href="${CPATH}/acinfo/delete/${(x.id!'')}-${(acinfoPage.pageNumber)!'1'}-${(busname2!'')}-${(acid!'')}" title="您确定要删除吗？"> <i
+										class="ace-icon fa fa-trash-o bigger-130"></i>
+									</a>
+									</#if>
+								</div>
+							</td>
+						</tr>
+						</#list>
+					</tbody>
+					<#else>
+					<tfoot>
+						<tr>
+							<td colspan="4" class="align-center">
+								<p class="font20 bolder well lighter red">您还没有<#if searchType = '2' >该</#if>设备</p>
+							</td>
+						<tr>
+					</tfoot>
+					</#if>
+				</table>
+				<#if acinfoPage.getList().size() &gt; 0>
+				<div class="row">
+				<div class="col-xs-1">
+					<div class="dataTables_info" id="sample-table-2_info" role="status"
+						aria-live="polite">总数：${(acinfoPage.totalRow)} </div>
+					</div>
+					<#include "/admin/layout/_paginateBySearch.html" />
+	<@paginate currentPage=acinfoPage.pageNumber totalPage=acinfoPage.totalPage actionUrl="${CPATH}/businessinfo/" urlParas=acPage />
+
+				</div>
+				</#if>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" value="${(businessinfoPage.getList().size())!0}" id="expFlage" />
+<!-- PAGE CONTENT ENDS -->
+<form action="" id="exportform" name="exportform" method="post">
+	<input type="hidden" name="bussinessidStr" value="${(bussinessidStr!'')}"/>
+	<textarea rows="" cols="" style="display:none;" name="htmlbody">
+	</textarea>
+</form>
+<!-- /.col -->
+<!-- PAGE CONTENT ENDS -->
+<!-- inline scripts related to this page -->
+		<script type="text/javascript">
+		function expDataBusinessinfo(){
+			var flage = $("#expFlage").val();
+			if(parseInt(flage)>0){
+				exportform.action="exp/businessinfo.jsp";
+				exportform.submit();
+
+			}else{
+				alert("暂无数据可导出！");
+			}
+			
+		}
+		function expDataAcinfo(){
+			var flage = $("#expFlage").val();
+			if(parseInt(flage)>0){
+				exportform.action="exp/acinfo.jsp";
+				exportform.submit();
+
+			}else{
+				alert("暂无数据可导出！");
+			}
+			
+		}
+		
+		jQuery(function($) {
+			$('#myTab a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+				if($(e.target).attr('href') == "${CPATH}/businessinfo/#home") drawChartNow();
+			})
+			var roleId = ${(roleId!'0')};
+			if(roleId == 1){
+				$('#businessAddress').show();
+				$('#acinfoAddress').show();
+			}else{
+				$('#businessAddress').hide();
+				$('#acinfoAddress').hide();
+			}
+			
+		});
+		
+		function searchForPage(url){
+			var frm = null;
+			var cls = $("#busli").attr("class");
+			if(cls=="active"){
+				frm = $("#busFrm");
+			}else
+				frm = $("#actFrm");
+			
+			frm.attr("action",url);
+			frm.submit();
+		}
+
+		function getAreaInfoRout(areaInfo){
+			$('#provinceId-rout').empty();
+			var provinceSelect = $('#provinceId-rout');
+			
+			provinceSelect.append('<option value="">--请选择--</option>');
+			if(areaInfo.value != "") {
+				$.ajax({
+					type : "post",
+					url : "site/getProvinceList",
+					data : {
+						"areaid" : areaInfo.value
+					},
+					dataType : "json",
+					success : function(data) {
+						$.each(data, function(n, data) {
+							provinceSelect.append('<option value="'+data.regioncode+'">' + data.regionname + '</option>');
+						});
+					}
+				});
+			}
+			getProvinceInfoRout({value:""});
+			getCityInfoRout({value:""});
+		}
+
+		function getProvinceInfoRout(provinceInfo){
+			$('#cityId-rout').empty();
+			var citySelect = $('#cityId-rout');
+			
+			citySelect.append('<option value="">--请选择--</option>');
+			if(provinceInfo.value != "") {
+				$.ajax({
+					type : "post",
+					url : "site/getCityList",
+					data : {
+						"provinceid" : provinceInfo.value
+					},
+					dataType : "json",
+					success : function(data) {
+						$.each(data, function(n, data) {
+							citySelect.append('<option value="'+data.regioncode+'">' + data.regionname + '</option>');
+						});
+					}
+				});
+			}
+			getCityInfoRout({value:""});
+		}
+		function getCityInfoRout(cityInfo){
+			$('#countiesId-rout').empty();
+			var countiesSelect = $('#countiesId-rout');
+			
+			countiesSelect.append('<option value="">--请选择--</option>');
+			if(cityInfo.value != "") {
+				$.ajax({
+					type : "post",
+					url : "site/getCountiesList",
+					data : {
+						"countiesid" : cityInfo.value
+					},
+					dataType : "json",
+					success : function(data) {
+						$.each(data, function(n, data) {
+							countiesSelect.append('<option value="'+data.regioncode+'">' + data.regionname + '</option>');
+						});
+					}
+				});
+			}
+		}
+		
+		function getAreaInfoBusiness(areaInfo){
+			$('#provinceId-bus').empty();
+			var provinceSelect = $('#provinceId-bus');
+			
+			provinceSelect.append('<option value="">--请选择--</option>');
+			if(areaInfo.value != "") {
+				$.ajax({
+					type : "post",
+					url : "site/getProvinceList",
+					data : {
+						"areaid" : areaInfo.value
+					},
+					dataType : "json",
+					success : function(data) {
+						$.each(data, function(n, data) {
+							provinceSelect.append('<option value="'+data.regioncode+'">' + data.regionname + '</option>');
+						});
+					}
+				});
+			}
+			getProvinceInfoBusiness({value:""});
+			getCityInfoBusiness({value:""});
+		}
+
+		function getProvinceInfoBusiness(provinceInfo){
+			$('#cityId-bus').empty();
+			var citySelect = $('#cityId-bus');
+			
+			citySelect.append('<option value="">--请选择--</option>');
+			if(provinceInfo.value != "") {
+				$.ajax({
+					type : "post",
+					url : "site/getCityList",
+					data : {
+						"provinceid" : provinceInfo.value
+					},
+					dataType : "json",
+					success : function(data) {
+						$.each(data, function(n, data) {
+							citySelect.append('<option value="'+data.regioncode+'">' + data.regionname + '</option>');
+						});
+					}
+				});
+			}
+			getCityInfoBusiness({value:""});
+		}
+		function getCityInfoBusiness(cityInfo){
+			$('#countiesId-bus').empty();
+			var countiesSelect = $('#countiesId-bus');
+			
+			countiesSelect.append('<option value="">--请选择--</option>');
+			if(cityInfo.value != "") {
+				$.ajax({
+					type : "post",
+					url : "site/getCountiesList",
+					data : {
+						"countiesid" : cityInfo.value
+					},
+					dataType : "json",
+					success : function(data) {
+						$.each(data, function(n, data) {
+							countiesSelect.append('<option value="'+data.regioncode+'">' + data.regionname + '</option>');
+						});
+					}
+				});
+			}
+		}
+</script>
+</@layout>

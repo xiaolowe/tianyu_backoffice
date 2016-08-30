@@ -1,0 +1,64 @@
+<style type="text/css">
+<!--
+	.modal-dialog {
+    width:50%;
+	}
+	.modal-header{
+		height: 60px;
+	}
+}
+-->
+</style>
+<div class="modal-header">
+	<button data-dismiss="modal" class="close" type="button">×</button>
+	<h4 class="blue bigger">编辑权限信息</h4>
+</div>
+<form class="form-horizontal" id="add-user-from" role="form"
+				method="post" action="sysUser/editPrivilege/${(roleid)}">
+<div class="modal-body">
+	<div class="row">
+		<div class="col-xs-12">
+				<div class="form-group">
+					<div class="col-sm-12">
+					  <#list menuList as x>
+						<div class="col-sm-3">
+							<label class="position-relative"> 
+						<#if x.ischeck == true>
+							<#if x.id == 1 || x.id == 2>
+								<input type="checkbox" checked="checked" disabled="disabled" class="ace item" name="menuid" value="${(x.id)}" />
+							<#else>
+								<input type="checkbox" checked="checked" class="ace item" name="menuid" value="${(x.id)}" />
+							</#if>
+						<#else>
+							<#if x.id == 1 || x.id == 2>
+								<input type="checkbox" checked="checked" disabled="disabled" class="ace item" name="menuid" value="${(x.id)}" />
+							<#else>
+								<input type="checkbox" class="ace item" name="menuid" value="${(x.id)}" />
+							</#if>
+						
+						</#if>
+						<span class="lbl">&nbsp;&nbsp;${(x.menuname)}</span></label>
+						</div>
+					  </#list>
+					</div>
+				</div>
+			
+		</div>
+	</div>
+</div>
+<div class="modal-footer">
+	<button data-dismiss="modal" class="btn btn-sm pull-left">
+		<i class="ace-icon fa fa-times"></i> 取消
+	</button>
+	<button type="reset" class="btn btn-sm btn-warning" id="clear_btn">
+		<i class="ace-icon fa fa-undo"></i>重置
+	</button>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<button type="submit"
+		class="btn btn-sm btn-primary">
+		<i class="ace-icon fa fa-check"></i> 保存
+	</button>
+</div>
+</form>
+<script type="text/javascript">
+</script>
